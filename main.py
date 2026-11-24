@@ -10,6 +10,7 @@ grievance (the stolen heated bed), the cat's own voice throughout, and the
 sting lands in the last few words.
 """
 
+import argparse
 import os
 import sys
 
@@ -43,12 +44,18 @@ def validate(text):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Write the cat review entry.")
+    parser.add_argument("--output", default=OUTPUT_PATH,
+                        help="where to write the entry (default: %(default)s)")
+    parser.add_argument("--verify", action="store_true",
+                        help="verify the written file matches and exit 0")
+    args = parser.parse_args()
     review = validate(REVIEW)
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-    with open(OUTPUT_PATH, "w", encoding="utf-8", newline="") as f:
+    os.makedirs(os.path.dirname(args.output), exist_ok=True)
+    with open(args.output, "w", encoding="utf-8", newline="") as f:
         f.write(review)
     # Read back and confirm what landed is exactly the review.
-    with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+    with open(args.output, "r", encoding="utf-8") as f:
         written = f.read()
     if written != review:
         print(
@@ -56,7 +63,7 @@ def main():
             file=sys.stderr,
         )
         sys.exit(1)
-    print("wrote %d characters to %s" % (len(written), OUTPUT_PATH))
+    print("wrote %d characters to %s" % (len(written), args.output))
 
 
 if __name__ == "__main__":
